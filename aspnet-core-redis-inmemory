@@ -33,5 +33,52 @@ farklı datalar üzerinde çalışıyor olacaklar. burada veri tutarsızlığı 
 1 gün boyunca o cache dataya erişim olabilir, bu durumda kullanıcı sürekli eski kayıtlara ulaşıyor olabilir. Bunu da absolute time da tanımlayarak kırabiliriz. Yani
 örneğin 2dk buna diğerine 10dk verirsek sadece 5 kere tekrarlanmasına izin vermiş oluruz.
 
-****8**** 
+****8****  Kurs esnasında kullanılan program ve versionları
+* dotnet core sdk v3
+* vs 2019
+* redis windows 3.0
+
+****9****  AddMemoryCache() servis ve IMemoryCache interface
+* AddMemoryCache() servisi startup servislere eklnirse ve de IMemoryCache interface i cache leme yapılacak class ın contructor ında dependency injection ile alınırsa
+cache leme işlemlerine başlayabilirler
+
+****10****  IMemoryCache Get() ve set() methodu
+* dataları serialize ettikten sonra get ve set methodları ile dataları cache leyebiliriz
+* datalar key value şeklinde depolanır, dictionary koleksiyon gibi
+* _memoryCache.Set<string>("zaman",Datetime.Now.ToString()) ile setleme yapılır ,_memoryCache.Get<string>("zaman"); ile de okuma yapılır
+
+****11**** IMemoryCache TryGetValue() ve Remove() methodu
+* data cahce te mi değil mi diye kontrlü 2 yolla yapılır,
+ 1.ci yol     ; if string.isnullorempty(_memoryCache.Get<string>("zaman")) 
+ 2.ci yol ise ; _memoryCache.Trygetvalue("zaman",string zamanCache) ile var mı yok mu diye kontrl edilir; eğer varsa zamanCache dolu gelir, 
+ hem de if true döner devam eder
+* GetOrCreate methodu ise, parametre var mı diye bakar, yoksa dolduru
+_memoryCache.GetOrCreate<string>("zaman", entry => { return datetime.now.tostring();  });
+
+****12****  AbsoluteExpiration ve SlidingExpiration
+* Memorycacheentryoption class ından instance alınması ile aşağıdaki parametreler kullanılır
+* AbsoluteExpiration => cache in kesin net ömrünü verir (datatime.now.second)
+* SlidingExpiration  => inaktif süresi, yani verilen sürede işlem olmazsa silinir (timespan)
+* Memorycacheentryoption in  instance ı da set ile birlikte kullanılır ve .cü parametre olarak ataması yapılır
+
+****13****  Cache Priority
+* Memorycacheentryoption class instance ında priorty attribute üne cacheitempriority enum ında bulunan öncelik seçenekleirnden biri seçilir
+* yüksek, düşük , neverremove gibi seçenekleri vardır
+
+
+****14****  RegisterPostEvictionCallback method
+* memory den bir data silindiğinde hangi nedenle silindi bilgisni RegisterPostEvictionCallback methodu ile görebiliyoruz.
+*  Memorycacheentryoption in  instance ı RegisterPostEvictionCallback methodu bir delege istiyor, delege e  key value reason state parametreleirni alıyor bu 
+durumda kod bloğu  
+
+Memorycacheentryoption in  instance ı .RegisterPostEvictionCallback(  ( key ,value, reason, state) => 
+{ 
+_memoryCache.Set<string>("callback",$({key} -> {value} => sebep => {reason} )); // ile cahce ten okuma yapılır
+}  )
+
+****15**** Complex types caching
+* 
+
+
+
 
