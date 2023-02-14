@@ -1,0 +1,37 @@
+# fatih çakıroğlu udemy redis eğitimi notları
+
+****3**** caching nedir ?
+
+* hızlı olması açısından sitelerimizin bu mekanizmaları kullanırız
+* 2 çeşit cache var => in memory (private) ve distributed (shared) cache yapıları var
+
+
+****4**** in memory (private) cache
+* uygulama verilerini, uygulamayı barındıran web server ın ram in memory sinde tutar
+* veriyi çekmeden önce cache de var mı yok mu diye bakılır, yoksa veritabanına gidilir, kullanıcıya vermeden önce de 3.cü adımda cache e kaydedilir. 
+sonraki her çekişde cache den okuma yapar.
+* handikapı şu, eğer 2 client varsa ve biri 10da biri 11 de veriyi çekmişse db den, ve de 10-11 arası db bir değişiklik olmuşsa 
+farklı datalar üzerinde çalışıyor olacaklar. burada veri tutarsızlığı meydana gelir.
+* key leri kişi bazlı tutsak bile sorunlara neden olabilir, EAKGUL_DEVICELIST gibi gibi.
+
+
+****5**** distrubuted (shared) cache
+* ayrı bir server da,server içinde çalışan bir servis aracılığıyla çalışan yapı
+* uygulama sunucusu kapansa veya crash olsa dahi cache sunucusu ayrı bir yerde çalıştığı için buradaki veriler kaybolmayacak
+* sunucuya giden farklı client lar olsa dahi hepsi tek bir cache servis ten alacağı için veri tutarlılığı olacaktır
+
+****6**** On-Demand ve PrePopulation Caching nedir ?
+* cache lenecek datalar çok fazla değişmeyen data olmalı
+* cache lenecek datalar çok sık kullanılan datalar olmalı
+* on demand     => dataya ihtiyacım olan ilk aşamada cache lemek
+* prepopulation => datayı uygulama daha ayağa kalkarken cache lemek
+*
+
+****7**** Cache ömrü (Absolute time ve Sliding time) nedir ?
+* Absolute time => kesin ömür zamanı yani örneğin 5 dk olarak set edilirse, 5 dk sonra kesin olarak data gider
+* Sliding time  => inaktif kalma zamanıdır, yani örneğin 5 dk olarak set edilirse eğer 5 dk içinde tekrar bir işlem görürse 5 dk daha ömrü uzar. Dezaantaj olarak
+1 gün boyunca o cache dataya erişim olabilir, bu durumda kullanıcı sürekli eski kayıtlara ulaşıyor olabilir. Bunu da absolute time da tanımlayarak kırabiliriz. Yani
+örneğin 2dk buna diğerine 10dk verirsek sadece 5 kere tekrarlanmasına izin vermiş oluruz.
+
+****8**** 
+
