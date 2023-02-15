@@ -77,7 +77,21 @@ _memoryCache.Set<string>("callback",$({key} -> {value} => sebep => {reason} )); 
 }  )
 
 ****15**** Complex types caching
-* 
+* örneğin product class ı oluşturuldu,id name ve price a sahip. bu class ı doldurduğumuzda imemorycache te cache lemek için serialize etmemize gerek yok
+Product prod = new(){Id = 1, Name =  "Kalem", Price = 200};
+_memoryCache.Set<Product>("product:1",prod);
+// gösterme için ise => _memoryCache.Get<Product>("product:1");
+* view de bu datayı viewbag ile aldığımızı varsayayrsak
+viewbag.product = _memoryCache.Get<Product>("product:1");  => gibi
+bunu okumak için;
+Product p = viewbag.product as Product; olarak alabiliriz.
+****** NOT : as keyword ü cast edebilirse veriyi döner, cast edemezse null gönderir ve hatasız devam eder
+            is keyword ü ise cast edebiliyorsa true yoksa false döner
+* bu ve benzeri tüm veri tiplerini _memoryCache.Set<double> , _memoryCache.Set<int> gibi gibi
+
+
+
+
 
 
 
