@@ -230,7 +230,16 @@ DistributedCacheEntryOptions distributedCache = new();
 
 
 *****28****  IDistributedCache-2 (Complex Type’ların cachlenmesi)
-*
+* nesne instance örneklerinin kaydedilmesi incelenecek
+* json veya binary serialize işlemleri ile bu veriler kaydedilecek
+*           aşağıdaki gibi bir class ı serialize edip, kayıt edebiliriz.  
+            Product product = new() { ID = 1, Name = "Elma", Price = 2000 };
+            string jsonProduct = JsonConvert.SerializeObject(product);
+            _distributedCache.SetStringAsync("product:1",jsonProduct,distributedCache);
+
+bu şekilde kaydedilen data desktop manager da value da json şeklinde görülmektedir.
+
+********
 
 
 
