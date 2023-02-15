@@ -90,8 +90,15 @@ Product p = viewbag.product as Product; olarak alabiliriz.
 * bu ve benzeri tüm veri tiplerini _memoryCache.Set<double> , _memoryCache.Set<int> gibi gibi
 
 
+****16****                Redis nedir ?
+* Remote DIctionary Server ın kısaltılmış halidir.
+* dataları memory de tutan bir nosql veritabanıdır.
+* key value şeklinde verileri tutar, ve tüm veri tiplerini desteklemekedir.
+* verileri tek bir versiyonda tutacağı için herkese aynı cahce i sağlar
+* kullanıcıların session verilerini de redis üzerinde tutabiliriz
 
-
+****17****                Chocolatey ile Redis Kurulum(windows)
+* 
 
 
 
