@@ -151,9 +151,12 @@ another redis desktop manager da hem 6379 hem de 6380 için connection yapabilir
 * power shell üzerinden bağlandığımda 127.0.0.1:6380 olarak görülür
 
 
- ****20****        Redis Veri Tipleri nelerdir ?
-*
+*****20****        Redis Veri Tipleri nelerdir ?
+* string ,list, set , sorted set, hash
+* redis-server ve redis-cli olarka 2 yapı vardır
 
+*****21****        Data Type: Redis String
+*
 
 
 
