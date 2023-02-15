@@ -191,11 +191,16 @@ eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren ve
 
 
 *****24****        Data Type: Redis Sorted Set
+* diziye kaydedilecek verilerin sıralarının belirlenebildiği tiptir
+* ZADD foods 1 food1 dediğimde foods array inin 1.ci score una food1 i yerleştirir, sıralamayı da bu score lara göre yapar
+* ZADD foods 5 food5 komutu ile de 5 score una food5 parametresini atar
+* score eşsiz olmak zorunda değil ama value lar yine eşsiz olmak zorunda
+* ZRANGE foods 0 -1 dersem dizideki bütün verileri listeler, ZRANGE foods 0 -1 WITHSCORE dersem de score ları ile birlikte bu verileri verir
+* ZREM foods food3 derem dizideki food3 verisini siler
+
+
+*****25****        Data Type: Redis Hash
 *
-
-
-
-
 
 
 
