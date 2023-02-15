@@ -156,7 +156,8 @@ another redis desktop manager da hem 6379 hem de 6380 için connection yapabilir
 * redis-server ve redis-cli olarka 2 yapı vardır
 
 *****21****        Data Type: Redis String
-*
-
-
+* SET KEY VALUE şeklinde veri kaydedilir, SET name Erol komutunu çalıştrıdğımda name key i için Erol verisini tutmuş olacak
+* GET name dediğimizde ise geriye Erol verisini döner
+* GETRANCH name 0 2 => komutu name key indeki verinin => sıfırıncı index inden ikinci index ine kadarki kısmı yani Ero şeklinde okuyup bize verir
+* 
 
