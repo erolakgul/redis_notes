@@ -98,7 +98,23 @@ Product p = viewbag.product as Product; olarak alabiliriz.
 * kullanıcıların session verilerini de redis üzerinde tutabiliriz
 
 ****17****                Chocolatey ile Redis Kurulum(windows)
-* 
+* windows için redis in resmi bir sürümü bulunmamaktadır, o yüzden genelde docker üzerine kurulur
+* redis güncel sürümğ şuan için 7.0 ama windows için güncel sürümü open source olduğu için orası 3.0.5 te
+* paket yöneticisi olarak Chocolatey kurulur,
+* kurulum adresi => https://chocolatey.org/
+* kurulumu için https://chocolatey.org/install 
+* burada ilk olarak Get-ExecutionPolicy kodunu power shell i yönetici olarak çalıştırıp başlıyoruz. eğer Restricted mesajı alınırsa 
+ Set-ExecutionPolicy AllSigned kodunu çalıştırıyoruz, ya da  Set-ExecutionPolicy Bypass -Scope Process bu kodu
+* sonrasında aşağıdaki kod çalıştırılır
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+* aşağıdaki kod bloğu ile de redis i chocolotlay ile kurulumunu sağlıyoruz , power shell den devam ediyıruz
+    choco install redis-64 --version 3.0.503
+* kurulum sonrası redis server ı ayağa kaldırmak için power shell den devam ediyoruz
+=> redis_server komutu ile kurulumu sağlıyoruz
+* yeni bir power shell i yönetici pozisyonunda çalıştırıyoruz
+ => redis_cli komutu ile redis client a geçiş yapmış oluyoruz; burada komut satırı 127.0.0.1:6379> şeklinde görünür olacaktır.
+* komut satırına ping yazıldığında PONG cevabı alınıyorsa redis başarılı bir şekilde kurulmuş demektir.
+*  
 
 
 
