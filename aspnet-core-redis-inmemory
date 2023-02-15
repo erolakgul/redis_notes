@@ -169,4 +169,15 @@ INCRBY ziyaretci 10 komutu ile içerdiği veriyi 1011 e setlemiş olur
 * APPEND name akgül dediğimde ise name de bulunan veriye akgül versini eklemiş olur.
 
 
+*****22****        Data Type: Redis List
+* dizi şeklinde veri tutmaya yarar
+* LPUSH books book1 komutu ile books key ine book1 verisini atmış oluruz. Left PUSH anlamında olduğu için her çalıştırıldığında en sola bu veriyi ekler
+* RPUSH books book3 komutu ile dizinin en sağına book3 verisini eklemiş oluruz
+* LRANGE books 0 2 komutu ile books dizisinde 0dan 2.ci index e kadar ki verileri listelemiş oluruz
+* LPOP books komutu ile en soldaki data silinir
+* RPOP books komutu ile en sağdaki data silinir
+* LINDEX books 1 komutu ile soldan ilk indexteki datayı oku demiş oluruz
+* c sharp taki linked list array in karşılığı gibi çalışır
+*
 
+*****23****        Data Type: Redis Set
