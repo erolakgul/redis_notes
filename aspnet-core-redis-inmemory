@@ -207,7 +207,12 @@ eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren ve
 * HGETALL sozluk dediğimizde ise tüm dizi verisi listelneir
 
 
-
+*****26**** AddStackExchangeRedisCache() service ve IDistributedCache interface
+* bir dotnet core 6 web app mvc uygulaması açılır
+* Microsoft.Extensions.Caching.StackExchangeRedis kütüphanesi projeye nuget ten eklenir
+* UdemyRedisApp ismiyle github a proje atıldı
+* IDistributedCache ile set get remove gibi basit işlemler redis e yapılabilir, çok karmaşık işlemler yapılmayacak bu iş görecektir
+* 
 
 
 
