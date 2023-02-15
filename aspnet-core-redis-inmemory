@@ -1,4 +1,5 @@
 # fatih çakıroğlu udemy redis eğitimi notları
+******************************************************* ilk olarak docker , windows a kurulur
 
 ****3**** caching nedir ?
 
@@ -133,4 +134,26 @@ eğer kaldıramadıysa docker stop docker_id diyerek önce durduralım sonra rm 
 * aynı dediği gibi çalıştırdıktan sonra local imizde de redis kurulumu gerçekleşti
 
 ****19****        Redis Desktop Manager kurulumu2
-* 
+* redis cache memory deki verileri görsel olarak görebileceğimiz uygulamadı gui arayüzü gibi, free versiyonu bulamadığım için 
+https://github.com/qishibo/AnotherRedisDesktopManager şuradaki release i indirip kurdum
+* config ayar olarak dışarıya açtığım port 6380 idi, docker da 6379 da yayın yapıyorken ben dışarıya 6380 den yayın yapsın demiştim
+, ip yi 127.0.0.1 olarak girip kaydediyorum ve db açılıyor
+* redis-cli ya yukarıdaki uygulamadan ya da power shell de docker exec -it docker_id sh ve redis-cli komutları ile erişilebilir
+* db0 dan db15 e kadar veritabanı vardır, bunlardan örneğin db0 ı oturum bilgilerini tutmak için, db1 i uygulama index bilgilerini, db15 i test verilerini tutmak için
+ayırabilirim.
+* bu arada eğer windows a chocolatley ile redisi kurduysam direkt olarak power shell i yönetici olarak çalıştırdığımda redis ayaktaysa yani redis-server komutu
+çalıştırılmışsa redis-cli diyerek redis e bağlanmış oluruz.
+* örneğin 2sini de yaptınız, hem choco ile windows a hem de image olarak docker hub a kurduğumuzu düşünelim. windows taki 6379,docker daki 6380 de yayın yapıyor olsun
+another redis desktop manager da hem 6379 hem de 6380 için connection yapabiliriz.
+* power shell den docker içindeki redis e bağlanmanın bir diğer yöntemi de (eğer cocho ile de kurduysanız)
+=> redis-cli -h 127.0.0.1 -p 6380 komutu ile de bağlanılır
+* docker üzerinden bağlandığımda eriştiğim redis sunucusu 127.0.0.1:6379> olarak görünürken
+* power shell üzerinden bağlandığımda 127.0.0.1:6380 olarak görülür
+
+
+ ****20****        Redis Veri Tipleri nelerdir ?
+*
+
+
+
+
