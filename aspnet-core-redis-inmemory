@@ -114,8 +114,10 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 * yeni bir power shell i yönetici pozisyonunda çalıştırıyoruz
  => redis_cli komutu ile redis client a geçiş yapmış oluyoruz; burada komut satırı 127.0.0.1:6379> şeklinde görünür olacaktır.
 * komut satırına ping yazıldığında PONG cevabı alınıyorsa redis başarılı bir şekilde kurulmuş demektir.
-*  
+ 
 
 
-
+****18****             Docker Container iler Redis Server ayağa kaldırma
+*power shell yine yönetici olarak çalıştıırlır,
+* komut satırına => 
 
