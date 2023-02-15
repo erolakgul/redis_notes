@@ -159,5 +159,14 @@ another redis desktop manager da hem 6379 hem de 6380 için connection yapabilir
 * SET KEY VALUE şeklinde veri kaydedilir, SET name Erol komutunu çalıştrıdğımda name key i için Erol verisini tutmuş olacak
 * GET name dediğimizde ise geriye Erol verisini döner
 * GETRANCH name 0 2 => komutu name key indeki verinin => sıfırıncı index inden ikinci index ine kadarki kısmı yani Ero şeklinde okuyup bize verir
-* 
+* SET ziyaretci 1000 dediğimizde ziyaretci key inde 1000 sayısını tutuyoruz örneğin,
+INCR komutu eğer int bir değerse key deki, onu 1 arttırır
+INCR ziyaretci komutunu çalıştırdığımızda ziyaretci key indeki data 1001 olur
+* eğer tek tek değilde 10 10 arttırmak istiyorsak
+INCRBY ziyaretci 10 komutu ile içerdiği veriyi 1011 e setlemiş olur
+* DECR ziyaretci olarak kullanırsak içerdiği int veriyi 1 azalttırmış olur
+* DECRBY ziyaretci 20 dersek de içerdiği int veriyi 20 azaltmış olur
+* APPEND name akgül dediğimde ise name de bulunan veriye akgül versini eklemiş olur.
+
+
 
