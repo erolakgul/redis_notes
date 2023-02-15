@@ -118,6 +118,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 
 
 ****18****             Docker Container iler Redis Server ayağa kaldırma
-*power shell yine yönetici olarak çalıştıırlır,
-* komut satırına => 
+*power shell yine yönetici olarak çalıştıırlır, some-redis => container isim parametresidir; onun yerine istenilen birşey yazılır
+* komut satırına => docker run --name some-redis -d redis
 
