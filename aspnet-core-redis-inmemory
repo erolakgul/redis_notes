@@ -214,5 +214,28 @@ eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren ve
 * IDistributedCache ile set get remove gibi basit işlemler redis e yapılabilir, çok karmaşık işlemler yapılmayacak bu iş görecektir
 * 
 
+*****27**** IDistributedCache-1 (Basit dataların kaydedilmesi)
+*   dotnetcore6 projesi devamında constructor da di ile instance aldıktan sonra cache in aşağıdaki gibi index action ında doldurabiliriz
+
+DistributedCacheEntryOptions distributedCache = new();
+            distributedCache.AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(2); // 2dk sonra sil
+            distributedCache.SlidingExpiration = TimeSpan.FromSeconds(50);              // 50 sn içinde işlem yapılmazsa sil
+
+            _distributedCache.SetString("reklam","eti", distributedCache);
+            
+            // çekilmesi
+              ViewBag.Show = _distributedCache.GetString("reklam");
+              // kaldırılması
+               _distributedCache.Remove("reklam");
+
+
+*****28****  IDistributedCache-2 (Complex Type’ların cachlenmesi)
+*
+
+
+
+
+
+
 
 
