@@ -200,7 +200,12 @@ eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren ve
 
 
 *****25****        Data Type: Redis Hash
-*
+* dizi olarak key value şeklinde bir tiptir
+* HMSET sozluk pen kalem komutu ile sozluk setinde pen karşılığında da kalem isimli veriyi tutabiliriz, dictionary gibi davranır
+* okumak için ise HGET sozluk pen komutu ile kalem verisni okuruz
+* HDEL sozluk book komutu ile de book key indeki veri silinir.
+* HGETALL sozluk dediğimizde ise tüm dizi verisi listelneir
+
 
 
 
