@@ -181,3 +181,23 @@ INCRBY ziyaretci 10 komutu ile içerdiği veriyi 1011 e setlemiş olur
 *
 
 *****23****        Data Type: Redis Set
+* dizi olarak tutar bu da, uniq değerler olmak zorunda içerdiği veriler. data eklendiğinde random bir şekilde başa ya da sona ya da ortaya ekler veriyi 
+* SADD color blue komutu ile color key ine blue value sunu eklemiş olurum dizide.
+* komut olarak yine blue eklmeye çalıştığınızda bu sefer sıfır olarak geri döner,kaydettiğinde ise 1 olarak geri döner
+* SMEMBERS color komutu ile ne kadar veri varsa dizi de hepsini okumuş oluruz
+* SREM color green komutu il green versini color dizisinden kaldırır
+* verileri kaydederken türkçe karakter kullanırsak eğer redis-cli ile bağlandığımız ortamda bunu okuyamayız veri encode edildiği için
+eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren veriyi okuyabiliriz (örneğin çğş gibi harfler)
+
+
+*****24****        Data Type: Redis Sorted Set
+*
+
+
+
+
+
+
+
+
+
