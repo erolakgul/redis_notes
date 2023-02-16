@@ -357,7 +357,8 @@ ayarlarını yapıyoruz..
   ViewBag.NameStr = db.StringGetRange("name",0,4);
   
 *****32****         StackExchange.Redis API Veri Tipleri => Redis List (c#LinkedList)
-*
+* list veri tipinde listenin başına veya sonuna item eklenebiliyordu, veya listenin başından veya sonundan bir item silinebiliyordu
+* 
 
 
 
