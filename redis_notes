@@ -289,4 +289,48 @@ okuma için de;
 * bu konu için github a redisexchangeapi.web uygulaması oluşturuyoruz. dotnetcore 6 mvc web project
 * bu projeye StackExchange.Redis pketini implement ediyoruz.
 * services isimli klasör açıp redisservice isimli class oluşturuyoruz, appsettings te ise redis url ve portunu tanımlıoyruz
+* rediservice altında IDatabase interface ini de db ye erişebilmek için kullanıyoruz
+* redisService class altında redis server a bir bağlantı nesnesi oluşturuyoruz, bir tane de herhangi bir (0dan15e) db ye bağlanabilmek için method hazırladık
+
+   private readonly string _redisHost;
+        private readonly string _redisPort;
+
+        //private IConfiguration _configuration;
+        // database ile etkileşim için
+        public IDatabase db { get; set; }
+        //redis server ile haberleşebilmek için
+        private ConnectionMultiplexer _redisServer;
+        public RedisServices(IConfiguration configuration)
+        {
+            //_configuration = configuration;
+            _redisHost = configuration["Redis:Host"];
+            _redisPort = configuration["Redis:Port"];
+        }
+
+        public void Connect()
+        {
+            var configString = $"{_redisHost}:{_redisPort}";
+            _redisServer = ConnectionMultiplexer.Connect(configString); 
+
+
+        }
+
+        // redis server da 0 dan 15 e kadar db vardı, buradaki işlemde o db lerden birini seçeceğiz
+        public IDatabase GetDb(int db)
+        {
+            return _redisServer.GetDatabase(db);
+        }
+        
+* dependency olarak kullanabilmek ve orta katmanda uygulama çalışr çalışmaz redis server a bağlanması için de
+// redis di
+builder.Services.AddSingleton<RedisServices>();
+
+// redis middle ware
+RedisServices redisServices = app.Services.GetService<RedisServices>();
+redisServices.Connect();
+
+ayarlarını yapıyoruz
+
+*****31****         StackExchange.Redis API Veri Tipleri => Redis String
+*
  
