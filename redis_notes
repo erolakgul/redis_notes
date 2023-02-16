@@ -329,8 +329,39 @@ builder.Services.AddSingleton<RedisServices>();
 RedisServices redisServices = app.Services.GetService<RedisServices>();
 redisServices.Connect();
 
-ayarlarını yapıyoruz
+ayarlarını yapıyoruz..
 
 *****31****         StackExchange.Redis API Veri Tipleri => Redis String
-*
+* her bir veri tipi içi n ayrı controller açılacak, ilki için stringcontroller ile başlıoyru
+* 16 db den birine bağlanıp string verileri kaydedeceğiz.
+* string controller index de aşağıdaki kodu yazdığımızda, 0.cı db ye git, name ve ziyaretci key lerine o value ları yaz demiş oluyoruz.
+ docker da 6380 portuna map lemiştik, uygulamamız 6380 den redis db ye erişip  aşağıdaki kayıtları kaydedecektir
+           
+            // 0.cı db ye string verileri kaydedecğeiz
+            var db = _redisServices.GetDb(0);
+            db.StringSet("name","erol akgül");
+            db.StringSet("ziyaretci", 100);
+            
+ * okuma yaparken de show action ı altına
+  
+            // 0.cı db den string verileri çekeceğiz // eğer o controller da hep aynı db ile çalışacaksak yapıcı method ta da bunu doldurabiliriz.
+            var db = _redisServices.GetDb(0);
+            if (db.StringGet("name").HasValue || db.StringGet("ziyaretci").IsInteger)   // api bize dönen değerin value su var mı yok mu, integer mı null mı gibi sorgulayacak parametreleri de veriyor
+            {
+                db.StringIncrement("ziyaretci"); // 100 idi 101 olarak yansıyacak
+                var count = db.StringDecrementAsync("ziyaretci", 1).Result; // 102 ise 1 azaltıp 101 yapacaktır
+                ViewBag.Show = $"{db.StringGet("name")} - {db.StringGet("ziyaretci")}";
+            }
  
+* string verinin kısmi görüntülenmesi
+  ViewBag.NameStr = db.StringGetRange("name",0,4);
+  
+*****32****         StackExchange.Redis API Veri Tipleri => Redis List (c#LinkedList)
+*
+
+
+
+
+
+
+
