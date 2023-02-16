@@ -251,7 +251,27 @@ okuma için de;
             string jsonProduct = Encoding.UTF8.GetString(byteProdcut);  
             
 * binary e formata çevirip tekrar oradan okumak için fazladan 2 satır kodu yazılıyor, json format yeterli o yüzden
-********
 
 
+*****29****   IDistributedCache-3 (Dosyaların cache’lenmesi)
+* pdf image gibi dosyaların cache lenmesi için de bu yol kullanılabilir
+
+            // ilk yol alınır
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/not-authorized.png");
+            // dosyayı byte a çevir
+            byte[] byteImage = System.IO.File.ReadAllBytes(path);
+            // resmi cache le
+            _distributedCache.Set("resim",byteImage);
+            
+            okuma => product controller altına imageurl isminde action açılır dönüş tipi de 
+
+        public IActionResult ImageUrl()
+        {
+            // ilk cache deki byte data okunur
+            byte[] byteImage = _distributedCache.Get("resim");
+
+            return File(byteImage,"image/png");
+        }
+            
+* 
 
