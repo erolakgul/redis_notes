@@ -243,8 +243,14 @@ bu şekilde kaydedilen data desktop manager da value da json şeklinde görülme
 * bir binary e cast edip datayı cache leyip ekrana basacak olursak; json olarak serialize edilmiş class instance ını aşağıdaki gibi byte a çevirip cache leyebiliriz.
 
               Byte[] byteProduct = Encoding.UTF8.GetBytes(jsonProduct);
-            _distributedCache.Set("product:2",byteProduct);
+              _distributedCache.Set("product:2",byteProduct);
 
+okuma için de;
+
+            Byte[] byteProdcut = _distributedCache.Get("product:2");
+            string jsonProduct = Encoding.UTF8.GetString(byteProdcut);  
+            
+* binary e formata çevirip tekrar oradan okumak için fazladan 2 satır kodu yazılıyor, json format yeterli o yüzden
 ********
 
 
