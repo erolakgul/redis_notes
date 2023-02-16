@@ -272,6 +272,8 @@ okuma için de;
 
             return File(byteImage,"image/png");
         }
-            
+        
+        client tarafta da
+        <img src="/product/ImageUrl" /> yapıldığında bu file olarak dönen nesne kullancıya gösterilmiş olur
 * 
 
