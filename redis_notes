@@ -1,0 +1,251 @@
+# fatih çakıroğlu udemy redis eğitimi notları
+******************************************************* ilk olarak docker , windows a kurulur
+
+****3**** caching nedir ?
+
+* hızlı olması açısından sitelerimizin bu mekanizmaları kullanırız
+* 2 çeşit cache var => in memory (private) ve distributed (shared) cache yapıları var
+
+
+****4**** in memory (private) cache
+* uygulama verilerini, uygulamayı barındıran web server ın ram in memory sinde tutar
+* veriyi çekmeden önce cache de var mı yok mu diye bakılır, yoksa veritabanına gidilir, kullanıcıya vermeden önce de 3.cü adımda cache e kaydedilir. 
+sonraki her çekişde cache den okuma yapar.
+* handikapı şu, eğer 2 client varsa ve biri 10da biri 11 de veriyi çekmişse db den, ve de 10-11 arası db bir değişiklik olmuşsa 
+farklı datalar üzerinde çalışıyor olacaklar. burada veri tutarsızlığı meydana gelir.
+* key leri kişi bazlı tutsak bile sorunlara neden olabilir, EAKGUL_DEVICELIST gibi gibi.
+
+
+****5**** distrubuted (shared) cache
+* ayrı bir server da,server içinde çalışan bir servis aracılığıyla çalışan yapı
+* uygulama sunucusu kapansa veya crash olsa dahi cache sunucusu ayrı bir yerde çalıştığı için buradaki veriler kaybolmayacak
+* sunucuya giden farklı client lar olsa dahi hepsi tek bir cache servis ten alacağı için veri tutarlılığı olacaktır
+
+****6**** On-Demand ve PrePopulation Caching nedir ?
+* cache lenecek datalar çok fazla değişmeyen data olmalı
+* cache lenecek datalar çok sık kullanılan datalar olmalı
+* on demand     => dataya ihtiyacım olan ilk aşamada cache lemek
+* prepopulation => datayı uygulama daha ayağa kalkarken cache lemek
+*
+
+****7**** Cache ömrü (Absolute time ve Sliding time) nedir ?
+* Absolute time => kesin ömür zamanı yani örneğin 5 dk olarak set edilirse, 5 dk sonra kesin olarak data gider
+* Sliding time  => inaktif kalma zamanıdır, yani örneğin 5 dk olarak set edilirse eğer 5 dk içinde tekrar bir işlem görürse 5 dk daha ömrü uzar. Dezaantaj olarak
+1 gün boyunca o cache dataya erişim olabilir, bu durumda kullanıcı sürekli eski kayıtlara ulaşıyor olabilir. Bunu da absolute time da tanımlayarak kırabiliriz. Yani
+örneğin 2dk buna diğerine 10dk verirsek sadece 5 kere tekrarlanmasına izin vermiş oluruz.
+
+****8****  Kurs esnasında kullanılan program ve versionları
+* dotnet core sdk v3
+* vs 2019
+* redis windows 3.0
+
+****9****  AddMemoryCache() servis ve IMemoryCache interface
+* AddMemoryCache() servisi startup servislere eklnirse ve de IMemoryCache interface i cache leme yapılacak class ın contructor ında dependency injection ile alınırsa
+cache leme işlemlerine başlayabilirler
+
+****10****  IMemoryCache Get() ve set() methodu
+* dataları serialize ettikten sonra get ve set methodları ile dataları cache leyebiliriz
+* datalar key value şeklinde depolanır, dictionary koleksiyon gibi
+* _memoryCache.Set<string>("zaman",Datetime.Now.ToString()) ile setleme yapılır ,_memoryCache.Get<string>("zaman"); ile de okuma yapılır
+
+****11**** IMemoryCache TryGetValue() ve Remove() methodu
+* data cahce te mi değil mi diye kontrlü 2 yolla yapılır,
+ 1.ci yol     ; if string.isnullorempty(_memoryCache.Get<string>("zaman")) 
+ 2.ci yol ise ; _memoryCache.Trygetvalue("zaman",string zamanCache) ile var mı yok mu diye kontrl edilir; eğer varsa zamanCache dolu gelir, 
+ hem de if true döner devam eder
+* GetOrCreate methodu ise, parametre var mı diye bakar, yoksa dolduru
+_memoryCache.GetOrCreate<string>("zaman", entry => { return datetime.now.tostring();  });
+
+****12****  AbsoluteExpiration ve SlidingExpiration
+* Memorycacheentryoption class ından instance alınması ile aşağıdaki parametreler kullanılır
+* AbsoluteExpiration => cache in kesin net ömrünü verir (datatime.now.second)
+* SlidingExpiration  => inaktif süresi, yani verilen sürede işlem olmazsa silinir (timespan)
+* Memorycacheentryoption in  instance ı da set ile birlikte kullanılır ve .cü parametre olarak ataması yapılır
+
+****13****  Cache Priority
+* Memorycacheentryoption class instance ında priorty attribute üne cacheitempriority enum ında bulunan öncelik seçenekleirnden biri seçilir
+* yüksek, düşük , neverremove gibi seçenekleri vardır
+
+
+****14****  RegisterPostEvictionCallback method
+* memory den bir data silindiğinde hangi nedenle silindi bilgisni RegisterPostEvictionCallback methodu ile görebiliyoruz.
+*  Memorycacheentryoption in  instance ı RegisterPostEvictionCallback methodu bir delege istiyor, delege e  key value reason state parametreleirni alıyor bu 
+durumda kod bloğu  
+
+Memorycacheentryoption in  instance ı .RegisterPostEvictionCallback(  ( key ,value, reason, state) => 
+{ 
+_memoryCache.Set<string>("callback",$({key} -> {value} => sebep => {reason} )); // ile cahce ten okuma yapılır
+}  )
+
+****15**** Complex types caching
+* örneğin product class ı oluşturuldu,id name ve price a sahip. bu class ı doldurduğumuzda imemorycache te cache lemek için serialize etmemize gerek yok
+Product prod = new(){Id = 1, Name =  "Kalem", Price = 200};
+_memoryCache.Set<Product>("product:1",prod);
+// gösterme için ise => _memoryCache.Get<Product>("product:1");
+* view de bu datayı viewbag ile aldığımızı varsayayrsak
+viewbag.product = _memoryCache.Get<Product>("product:1");  => gibi
+bunu okumak için;
+Product p = viewbag.product as Product; olarak alabiliriz.
+****** NOT : as keyword ü cast edebilirse veriyi döner, cast edemezse null gönderir ve hatasız devam eder
+            is keyword ü ise cast edebiliyorsa true yoksa false döner
+* bu ve benzeri tüm veri tiplerini _memoryCache.Set<double> , _memoryCache.Set<int> gibi gibi
+
+
+****16****                Redis nedir ?
+* Remote DIctionary Server ın kısaltılmış halidir.
+* dataları memory de tutan bir nosql veritabanıdır.
+* key value şeklinde verileri tutar, ve tüm veri tiplerini desteklemekedir.
+* verileri tek bir versiyonda tutacağı için herkese aynı cahce i sağlar
+* kullanıcıların session verilerini de redis üzerinde tutabiliriz
+
+****17****                Chocolatey ile Redis Kurulum(windows)
+* windows için redis in resmi bir sürümü bulunmamaktadır, o yüzden genelde docker üzerine kurulur
+* redis güncel sürümğ şuan için 7.0 ama windows için güncel sürümü open source olduğu için orası 3.0.5 te
+* paket yöneticisi olarak Chocolatey kurulur,
+* kurulum adresi => https://chocolatey.org/
+* kurulumu için https://chocolatey.org/install 
+* burada ilk olarak Get-ExecutionPolicy kodunu power shell i yönetici olarak çalıştırıp başlıyoruz. eğer Restricted mesajı alınırsa 
+ Set-ExecutionPolicy AllSigned kodunu çalıştırıyoruz, ya da  Set-ExecutionPolicy Bypass -Scope Process bu kodu
+* sonrasında aşağıdaki kod çalıştırılır
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+* aşağıdaki kod bloğu ile de redis i chocolotlay ile kurulumunu sağlıyoruz , power shell den devam ediyıruz
+    choco install redis-64 --version 3.0.503
+* kurulum sonrası redis server ı ayağa kaldırmak için power shell den devam ediyoruz
+=> redis_server komutu ile kurulumu sağlıyoruz
+* yeni bir power shell i yönetici pozisyonunda çalıştırıyoruz
+ => redis_cli komutu ile redis client a geçiş yapmış oluyoruz; burada komut satırı 127.0.0.1:6379> şeklinde görünür olacaktır.
+* komut satırına ping yazıldığında PONG cevabı alınıyorsa redis başarılı bir şekilde kurulmuş demektir.
+ 
+
+
+****18****             Docker Container iler Redis Server ayağa kaldırma
+*power shell yine yönetici olarak çalıştıırlır, some-redis => container isim parametresidir; onun yerine istenilen birşey yazılır
+* komut satırına => docker run --name some-redis -d redis yazılır
+* kurulum sonrası power shell de yine docker ps yazıldığında hangi container lar ayakta ise görülür
+* localhost tan bağlantı yapabilmek için portunu map lemek gerekiyordu, o yüzden docker rm docker_id yazıp kaldırıyoruz image ı, 
+eğer kaldıramadıysa docker stop docker_id diyerek önce durduralım sonra rm yi çalıştıralım
+* kaldırma işlemi tamamlandıysa => 
+* docker run -p 6380:6379 --name some-redis -d redis komutuyla 6379 numaralı portu 6380 numaralı porta map lemiş oluyoruz.
+* bunu yapma nedenimiz ise docker container içrisinde 6379 numaralı portu kullacank redis,biz dışarıdan erişim için ise 6380 numaralı portu kullanacağız,,
+6380 de 6379 numaralı porta map lendiği için eirşebilir olacağız.
+* kurulum tamamlandığında docker ps dediğimizde bu sefer redis i görmüş olacağız.
+* docker exec -it docker_id_ilk3karakter sh komutu ile redis server içeriisne girmiş olacağız.
+* redis-cli komutunu çalıştırdığımızda da artık ona erişebiliyor olacağız.
+* aynı dediği gibi çalıştırdıktan sonra local imizde de redis kurulumu gerçekleşti
+
+****19****        Redis Desktop Manager kurulumu2
+* redis cache memory deki verileri görsel olarak görebileceğimiz uygulamadı gui arayüzü gibi, free versiyonu bulamadığım için 
+https://github.com/qishibo/AnotherRedisDesktopManager şuradaki release i indirip kurdum
+* config ayar olarak dışarıya açtığım port 6380 idi, docker da 6379 da yayın yapıyorken ben dışarıya 6380 den yayın yapsın demiştim
+, ip yi 127.0.0.1 olarak girip kaydediyorum ve db açılıyor
+* redis-cli ya yukarıdaki uygulamadan ya da power shell de docker exec -it docker_id sh ve redis-cli komutları ile erişilebilir
+* db0 dan db15 e kadar veritabanı vardır, bunlardan örneğin db0 ı oturum bilgilerini tutmak için, db1 i uygulama index bilgilerini, db15 i test verilerini tutmak için
+ayırabilirim.
+* bu arada eğer windows a chocolatley ile redisi kurduysam direkt olarak power shell i yönetici olarak çalıştırdığımda redis ayaktaysa yani redis-server komutu
+çalıştırılmışsa redis-cli diyerek redis e bağlanmış oluruz.
+* örneğin 2sini de yaptınız, hem choco ile windows a hem de image olarak docker hub a kurduğumuzu düşünelim. windows taki 6379,docker daki 6380 de yayın yapıyor olsun
+another redis desktop manager da hem 6379 hem de 6380 için connection yapabiliriz.
+* power shell den docker içindeki redis e bağlanmanın bir diğer yöntemi de (eğer cocho ile de kurduysanız)
+=> redis-cli -h 127.0.0.1 -p 6380 komutu ile de bağlanılır
+* docker üzerinden bağlandığımda eriştiğim redis sunucusu 127.0.0.1:6379> olarak görünürken
+* power shell üzerinden bağlandığımda 127.0.0.1:6380 olarak görülür
+
+
+*****20****        Redis Veri Tipleri nelerdir ?
+* string ,list, set , sorted set, hash
+* redis-server ve redis-cli olarka 2 yapı vardır
+
+*****21****        Data Type: Redis String
+* SET KEY VALUE şeklinde veri kaydedilir, SET name Erol komutunu çalıştrıdğımda name key i için Erol verisini tutmuş olacak
+* GET name dediğimizde ise geriye Erol verisini döner
+* GETRANCH name 0 2 => komutu name key indeki verinin => sıfırıncı index inden ikinci index ine kadarki kısmı yani Ero şeklinde okuyup bize verir
+* SET ziyaretci 1000 dediğimizde ziyaretci key inde 1000 sayısını tutuyoruz örneğin,
+INCR komutu eğer int bir değerse key deki, onu 1 arttırır
+INCR ziyaretci komutunu çalıştırdığımızda ziyaretci key indeki data 1001 olur
+* eğer tek tek değilde 10 10 arttırmak istiyorsak
+INCRBY ziyaretci 10 komutu ile içerdiği veriyi 1011 e setlemiş olur
+* DECR ziyaretci olarak kullanırsak içerdiği int veriyi 1 azalttırmış olur
+* DECRBY ziyaretci 20 dersek de içerdiği int veriyi 20 azaltmış olur
+* APPEND name akgül dediğimde ise name de bulunan veriye akgül versini eklemiş olur.
+
+
+*****22****        Data Type: Redis List
+* dizi şeklinde veri tutmaya yarar
+* LPUSH books book1 komutu ile books key ine book1 verisini atmış oluruz. Left PUSH anlamında olduğu için her çalıştırıldığında en sola bu veriyi ekler
+* RPUSH books book3 komutu ile dizinin en sağına book3 verisini eklemiş oluruz
+* LRANGE books 0 2 komutu ile books dizisinde 0dan 2.ci index e kadar ki verileri listelemiş oluruz
+* LPOP books komutu ile en soldaki data silinir
+* RPOP books komutu ile en sağdaki data silinir
+* LINDEX books 1 komutu ile soldan ilk indexteki datayı oku demiş oluruz
+* c sharp taki linked list array in karşılığı gibi çalışır
+*
+
+*****23****        Data Type: Redis Set
+* dizi olarak tutar bu da, uniq değerler olmak zorunda içerdiği veriler. data eklendiğinde random bir şekilde başa ya da sona ya da ortaya ekler veriyi 
+* SADD color blue komutu ile color key ine blue value sunu eklemiş olurum dizide.
+* komut olarak yine blue eklmeye çalıştığınızda bu sefer sıfır olarak geri döner,kaydettiğinde ise 1 olarak geri döner
+* SMEMBERS color komutu ile ne kadar veri varsa dizi de hepsini okumuş oluruz
+* SREM color green komutu il green versini color dizisinden kaldırır
+* verileri kaydederken türkçe karakter kullanırsak eğer redis-cli ile bağlandığımız ortamda bunu okuyamayız veri encode edildiği için
+eğer redis-cli --raw parametresi ile başlatırsak türkçe karakter içeren veriyi okuyabiliriz (örneğin çğş gibi harfler)
+
+
+*****24****        Data Type: Redis Sorted Set
+* diziye kaydedilecek verilerin sıralarının belirlenebildiği tiptir
+* ZADD foods 1 food1 dediğimde foods array inin 1.ci score una food1 i yerleştirir, sıralamayı da bu score lara göre yapar
+* ZADD foods 5 food5 komutu ile de 5 score una food5 parametresini atar
+* score eşsiz olmak zorunda değil ama value lar yine eşsiz olmak zorunda
+* ZRANGE foods 0 -1 dersem dizideki bütün verileri listeler, ZRANGE foods 0 -1 WITHSCORE dersem de score ları ile birlikte bu verileri verir
+* ZREM foods food3 derem dizideki food3 verisini siler
+
+
+*****25****        Data Type: Redis Hash
+* dizi olarak key value şeklinde bir tiptir
+* HMSET sozluk pen kalem komutu ile sozluk setinde pen karşılığında da kalem isimli veriyi tutabiliriz, dictionary gibi davranır
+* okumak için ise HGET sozluk pen komutu ile kalem verisni okuruz
+* HDEL sozluk book komutu ile de book key indeki veri silinir.
+* HGETALL sozluk dediğimizde ise tüm dizi verisi listelneir
+
+
+*****26**** AddStackExchangeRedisCache() service ve IDistributedCache interface
+* bir dotnet core 6 web app mvc uygulaması açılır
+* Microsoft.Extensions.Caching.StackExchangeRedis kütüphanesi projeye nuget ten eklenir
+* UdemyRedisApp ismiyle github a proje atıldı
+* IDistributedCache ile set get remove gibi basit işlemler redis e yapılabilir, çok karmaşık işlemler yapılmayacak bu iş görecektir
+* 
+
+*****27**** IDistributedCache-1 (Basit dataların kaydedilmesi)
+*   dotnetcore6 projesi devamında constructor da di ile instance aldıktan sonra cache in aşağıdaki gibi index action ında doldurabiliriz
+
+DistributedCacheEntryOptions distributedCache = new();
+            distributedCache.AbsoluteExpiration = DateTimeOffset.UtcNow.AddMinutes(2); // 2dk sonra sil
+            distributedCache.SlidingExpiration = TimeSpan.FromSeconds(50);              // 50 sn içinde işlem yapılmazsa sil
+
+            _distributedCache.SetString("reklam","eti", distributedCache);
+            
+            // çekilmesi
+              ViewBag.Show = _distributedCache.GetString("reklam");
+              // kaldırılması
+               _distributedCache.Remove("reklam");
+
+
+*****28****  IDistributedCache-2 (Complex Type’ların cachlenmesi)
+* nesne instance örneklerinin kaydedilmesi incelenecek
+* json veya binary serialize işlemleri ile bu veriler kaydedilecek
+*           aşağıdaki gibi bir class ı serialize edip, kayıt edebiliriz. 
+ 
+            Product product = new() { ID = 1, Name = "Elma", Price = 2000 };
+            string jsonProduct = JsonConvert.SerializeObject(product);
+            _distributedCache.SetStringAsync("product:1",jsonProduct,distributedCache);
+
+bu şekilde kaydedilen data desktop manager da value da json şeklinde görülmektedir.
+
+* bir binary e cast edip datayı cache leyip ekrana basacak olursak; json olarak serialize edilmiş class instance ını aşağıdaki gibi byte a çevirip cache leyebiliriz.
+
+              Byte[] byteProduct = Encoding.UTF8.GetBytes(jsonProduct);
+            _distributedCache.Set("product:2",byteProduct);
+
+********
+
+
+
