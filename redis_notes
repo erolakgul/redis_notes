@@ -556,3 +556,9 @@ yapıyı başka bir pattern ile devam edeceğiz.
    çünkü ne controller a dokunuldu ne de repository e dokunuldu
  ** cache için yapıldığı gibi loglama yapılabilmesi için de bu yapı kullanılmalı
 
+ => öğrenilmesi gerkeen design pattern ler
+ strategy
+ adapter
+ decorator
+ bridge
+ 
