@@ -464,6 +464,95 @@ ayarlarını yapıyoruz..
 ******35****         StackExchange.Redis API Veri Tipleri => Redis Hash (c# dictionary)
 * verileri key value şeklinde tutmaya yarar, c sharp ta dicitonary class ına denk gelir
 * hashtype controller ında kodlar
+
+
 ====================>>>>>>>>>>>>>>>>  redis exchange ile c sharp üzerinde yapabildiklerimiz anlatıldı
 
+
+******36****         .Net 7 SDK Kurulumu
+
+
+
+******37****   Asp.Net Core MVC Örnek Proje Oluşturma -1
+** redisexample.api isminde api solution oluştuurldu
+
+
+******38****   Asp.Net Core MVC Örnek Proje Oluşturma -2
+** efcore.inmemory paketini kullandığımızda verileri cache e kaydeder, migraiton yapmaya gerek yoktur
+** bu inmemory genelliktle unit test te kullanılır ve relation mantığı yoktur
+** db configini program cs te vereceksek appcontext dosyasında onconfigure ü kullanmıoyurz,
+** onmodelcreating de seed data oluştuurldu
+
+
+
+******39****  Asp.Net Core MVC Örnek Proje Oluşturma -3
+* repository ler ve controller oluşturuldu
+* program cs te servislere iproductrepositoyry eklendi
+builder.services.addscope<iproductrepo,productrepo>(); // iproductrepo dan nesne aldığın zaman prodcut repodan almış ol dedik
+* dotnetcore inmemory db kullanıldığında db nin oluşması için program cs te oluşturulduundan emin olunması gerekiyor o yüzden
+* program cs te builder.Build() methodundan sonra
+using(var scope = app.services.createscope())
+{
+   var dbcontext = scope.serviceprovider.getrequiredservice<applicatondbcontext>();
+   dbcontext.database.ensurecreated();
+}
+dememiz gerekiyor. çünkü veriler cache olarak vrilerin configurasyon ve datalara göre oluşturuluyor
+
+*****40**** Redis container çalıştırma
+* docker kurduktan sonra docker hub da redis kurulum script i redis i kuruyoruz
+* another redis desktop manager kuruyoruz
+* bağlantısını sağloyruz
+* 
+
+*****41**** Cache Class Library ve Redis Service oluşturma
+* redis exchange api kütüphasnesi nesnesi singleton olarak redisservice classs ı altında tutulmalı
+
+***** ##eğer eklenecek olan servis in yapıcı methodu bir parametre alacak ise program cs te eklenirken aşağıdaki şekilde parametresi gönderilir
+ =>
+ builder.services.addsingleton<redisservice>( sp=> {
+   return new redisservice(builder.configuration["CacheOption:Url"]);
+ });
+ 
+ ** eğer idatabase nesnesini her defasında controller da kontrol etmeyeceksek, yani hep 0.cı db yi kullanacaksak, program cs tarafında
+  aşağıdaki gibi kullanıp, uygulama boyunca idatabase i sadece dependency olarak ekleyip kullanabiliriz
+  
+  builder.services.addsingleton<idatabase>( sp=> {
+   var redisservice = sp.getrequiredservice<redisservice>();
+   return  redisservice.getdb(0);
+ });
+ 
+ 
+ *****42****  Cache yapısının entegre edilmesi-1
+* cache yapısını controller a yada repository e ekleyemeyecek şekilde geliştirme yapacağız, çünkü class yapısı değiştiğinde solid prensiplerine uygun olacak şekğilde 
+yapıyı başka bir pattern ile devam edeceğiz.
+=> decorator design pattern : bir uygulamanın kodlarını değiştirmeden yeni davranışlar eklememize imkan veren tasarımdır, yeni bir özellik ekliyorsun, var olan yapıyı bozmadan özelliği ekle
+   ** adapter design pattern : bir projeye yeni 3.parti library ekleme 
+   ** strategy design paatern : runtime da algoritma değişikliği 
+   
+   decorator design pattern e göre biz ilerleyeceiz
+   normalde  ef core db den veri okuyup yazrken repository leri kullanıyoruz
+   yani product class ı için 
+   iproductrepository interface i ve onun implemente olduğu productrepository class ı ile bu işi çözümlüyordur.
+   şimdi bu pattern e göre ise bu işi productrepositorywithcachedecorator reposu oluştuuryoruz, controller a interface i depend ediyorduk,
+ şimdi bu durumda 2 tane reponun verisini de kontrol edebileceğiz
+   
+ *****43****  Cache yapısının entegre edilmesi-2
+ ** productrepositorywithcachedecorator class ı iproductrepository interface ini hem inherit alıyor, hem de dependency olarak yapıcı methoduna ekliyor 
+ **productrepositorywithcachedecorator da impelent ettikten sonra cache te var mı yok mu , yoksa kayde ekle şeklinde yazdık
+ 
+ *****44****  Cache yapısının entegre edilmesi-3
+ ** productrepositorywithcachedecorator reposunu artık iproductrepository den gelecek şekilde ayarlamamız gerekiyor
+  program cs te kod yapısını şu şekilde değiştiriyoruz
+  
+    builder.services.addscope<iproductrepository>( sp=> {
+   var appdbcontext = sp.getrequiredservice<appdbcontext>();
+   var productrepo = new productrepository(appdbcontext);
+   var redisservice = sp.getrequiredservice<redisservice>();
+   
+   return new productrepositorywithcachedecorator(productrepo,redisservice);
+ });
+  
+ ** bu sayede uygulama open closed prensibine uygun oldu, gelişime açık ama değişime kapalı hale gelmiş oldu bu yapı ile.
+   çünkü ne controller a dokunuldu ne de repository e dokunuldu
+ ** cache için yapıldığı gibi loglama yapılabilmesi için de bu yapı kullanılmalı
 
