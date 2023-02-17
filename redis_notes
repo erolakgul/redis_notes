@@ -413,8 +413,8 @@ ayarlarını yapıyoruz..
             return RedirectToAction("Index");
         }
         
-*
-
+******33****         StackExchange.Redis API Veri Tipleri => Redis Set (c# hashset)
+* 
 
 
 
