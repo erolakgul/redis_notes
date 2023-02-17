@@ -454,14 +454,16 @@ ayarlarını yapıyoruz..
   * setpop metotu örneğin hem bir element siliyor hem de sildiği elementi geri döndürüyor
   *
   
-  ******34****         StackExchange.Redis API Veri Tipleri => Redis Sorted Set
+******34****         StackExchange.Redis API Veri Tipleri => Redis Sorted Set
   * sorted set de kaydedilen item a bir de score değeri verilebiliyor, bu score değerine göre sıralama gerçekleştirilebiliyor, aralara girilebilyor
   * aynı key i tekrar eklemye çalıştığımızda eğer score u farklıysa score unu günceller sadece
   * item ların score ları aynı olabilir ama aynı item kaydedilemez
   * sortedsettype controller da geliştirme yapıldı
   
 
-
-
+******35****         StackExchange.Redis API Veri Tipleri => Redis Hash (c# dictionary)
+* verileri key value şeklinde tutmaya yarar, c sharp ta dicitonary class ına denk gelir
+* hashtype controller ında kodlar
+====================>>>>>>>>>>>>>>>>  redis exchange ile c sharp üzerinde yapabildiklerimiz anlatıldı
 
 
