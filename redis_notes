@@ -455,7 +455,11 @@ ayarlarını yapıyoruz..
   *
   
   ******34****         StackExchange.Redis API Veri Tipleri => Redis Sorted Set
-  *
+  * sorted set de kaydedilen item a bir de score değeri verilebiliyor, bu score değerine göre sıralama gerçekleştirilebiliyor, aralara girilebilyor
+  * aynı key i tekrar eklemye çalıştığımızda eğer score u farklıysa score unu günceller sadece
+  * item ların score ları aynı olabilir ama aynı item kaydedilemez
+  * sortedsettype controller da geliştirme yapıldı
+  
 
 
 
