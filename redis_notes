@@ -358,7 +358,62 @@ ayarlarını yapıyoruz..
   
 *****32****         StackExchange.Redis API Veri Tipleri => Redis List (c#LinkedList)
 * list veri tipinde listenin başına veya sonuna item eklenebiliyordu, veya listenin başından veya sonundan bir item silinebiliyordu
+* ListType controller da ekleme silme ve listeleme şeklinde geliştirmeler yapıldı
 * 
+
+        public IActionResult Index()
+        {
+            List<string> nameList = new();// _db.ListRange(listKey); 
+
+            if (_db.KeyExists(listKey))
+            {
+                _db.ListRange(listKey).ToList().ForEach(x=>
+                {
+                    nameList.Add(x.ToString());
+                });
+            }
+
+            return View(nameList);
+        }
+
+        [HttpPost]
+        public IActionResult AddRight(string name)
+        {
+            _db.ListRightPush(listKey,name); // gelen veriyi en sağa yaz demek
+
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public IActionResult AddRLeft(string name)
+        {
+            _db.ListLeftPush(listKey,name); // gelen veriyi en sola yaz demek
+
+            return RedirectToAction("Index");
+        }
+        //[HttpPost]
+        public async Task<IActionResult> Delete(string name)
+        {
+            await _db.ListRemoveAsync(listKey,name); // gelen veriyi en sağa yaz demek
+            //_db.ListRemoveAsync(listKey, name).Wait();
+            return RedirectToAction("Index");
+        }
+      
+        public IActionResult DeleteFirstItem()
+        {
+            _db.ListLeftPop(listKey); // en soldan siler
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult DeleteLastItem()
+        {
+            _db.ListRightPop(listKey); // en sağdan siler
+            return RedirectToAction("Index");
+        }
+        
+*
 
 
 
