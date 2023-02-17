@@ -413,9 +413,49 @@ ayarlarını yapıyoruz..
             return RedirectToAction("Index");
         }
         
-******33****         StackExchange.Redis API Veri Tipleri => Redis Set (c# hashset)
-* 
+******33****         StackExchange.Redis API Veri Tipleri => Redis HashSet (c# hashset)
+* hash set de veriler uniqe olarak kaydedilir, ekleme aşaması ise karışıktır, ortaya başa sona ekleme şeklinde çalışır
+* settype controller isminde kaydedildi, github daki kodlar üzerinden de izlenebilir
+* ard arada örneğin foods listesine rice kaydedip tekrar rice diye kaydedilirse kaydetmez
+* eğer action içinde birden fazla asenkron varsa method un kendisi async task yapılır
 
+    [HttpPost]
+        public IActionResult Add(string name)
+        {
+            //absolute time out özelliği
+
+            #region bi kere çalışsın isteniyorsa
+            //if (!_db.KeyExists(listKey))
+            //{
+            //    _db.KeyExpire(listKey, DateTime.Now.AddMinutes(1));
+            //} 
+            #endregion
+
+            // eğer aynı method altında çağırılırsa kendiliğinde sliding expire olmuş olur
+            _db.KeyExpire(listKey,DateTime.Now.AddMinutes(1)); // 1 dk lık expire süresi
+            _db.SetAdd(listKey, name);    
+
+            return RedirectToAction("Index");
+        }
+
+        //[HttpPost]
+        public IActionResult Delete(string name)
+        {
+            _db.SetRemove(listKey, name); 
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult GetRandomList(string name)
+        {
+            _db.SetRandomMember(listKey);
+            return RedirectToAction("Index");
+        }
+    
+  * setpop metotu örneğin hem bir element siliyor hem de sildiği elementi geri döndürüyor
+  *
+  
+  ******34****         StackExchange.Redis API Veri Tipleri => Redis Sorted Set
+  *
 
 
 
