@@ -126,7 +126,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 * localhost tan bağlantı yapabilmek için portunu map lemek gerekiyordu, o yüzden docker rm docker_id yazıp kaldırıyoruz image ı, 
 eğer kaldıramadıysa docker stop docker_id diyerek önce durduralım sonra rm yi çalıştıralım
 * kaldırma işlemi tamamlandıysa => 
-* docker run -p 6380:6379 --name some-redis -d redis komutuyla 6379 numaralı portu 6380 numaralı porta map lemiş oluyoruz.
+* "docker run -p 6380:6379 --name some-redis -d redis" komutuyla 6379 numaralı portu 6380 numaralı porta map lemiş oluyoruz.
 * bunu yapma nedenimiz ise docker container içrisinde 6379 numaralı portu kullacank redis,biz dışarıdan erişim için ise 6380 numaralı portu kullanacağız,,
 6380 de 6379 numaralı porta map lendiği için eirşebilir olacağız.
 * kurulum tamamlandığında docker ps dediğimizde bu sefer redis i görmüş olacağız.
